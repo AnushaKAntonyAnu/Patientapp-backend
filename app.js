@@ -14,7 +14,7 @@ app.get("/test",(req,res)=>{
     res.json({"status":"success"})
 })
 
-app.post("/adminSignin",(req,res)=>{
+app.post("/adminSignup",(req,res)=>{
     let input=req.body
     let hashedpassword=bcrypt.hashSync(input.password,10)
     //console.log(hashedpassword)
@@ -26,6 +26,25 @@ app.post("/adminSignin",(req,res)=>{
 
 })
 
+app.post("/adminSignin",(req,res)=>{
+    let input=req.body
+    let result=loginModel.find({username:input.username}).then(
+    (response)=>{
+        if(response.length>0){
+            const validator=bcrypt.compareSync(input.password,response[0].password)
+            if(validator){
+                res.json({"status":"success"})
+            }
+            else{
+                res.json({"status":"worng password"})
+            }
+        }
+        else{
+            res.json({"status":"username dosen't exist"})
+        }
+    }
+    )
+})
 app.listen(5050,()=>{
     console.log("Server Started")
 })
